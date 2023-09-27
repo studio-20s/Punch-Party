@@ -1,0 +1,197 @@
+[gd_scene load_steps=33 format=3 uid="uid://clnfq2gqweyhp"]
+
+[ext_resource type="Script" path="res://scripts/movement/top_down_controller.gd" id="1_1dc0n"]
+[ext_resource type="Shader" path="res://shaders/sprite.gdshader" id="2_tpd8u"]
+[ext_resource type="Script" path="res://scripts/interaction/hit/hitbox.gd" id="3_f7uyv"]
+[ext_resource type="Texture2D" uid="uid://ctuyqlhugsiwo" path="res://icon.svg" id="3_kwe0j"]
+[ext_resource type="Script" path="res://scripts/interaction/effects/sprite_shake_effect.gd" id="5_lnxyu"]
+[ext_resource type="Script" path="res://scripts/interaction/effects/slow_mo_effect.gd" id="6_4yby4"]
+[ext_resource type="Script" path="res://scripts/interaction/hit/hurtbox.gd" id="6_ovvjq"]
+[ext_resource type="Texture2D" uid="uid://bi7fkmg3oosb7" path="res://sprites/shapes/square.png" id="7_5qg83"]
+[ext_resource type="Script" path="res://scripts/interaction/effects/color_flicker_effect.gd" id="7_6d2gh"]
+[ext_resource type="Script" path="res://scripts/camera/camera_targeter.gd" id="8_gyc27"]
+[ext_resource type="Script" path="res://scripts/interaction/effects/particle_effect.gd" id="8_p3qh8"]
+[ext_resource type="Script" path="res://scripts/movement/pointer_rotator.gd" id="9_2pjw3"]
+[ext_resource type="Texture2D" uid="uid://dqnvyneq7rl8f" path="res://sprites/common/gun.png" id="10_uk5b4"]
+[ext_resource type="Script" path="res://scripts/movement/rotation_flipped_sprite.gd" id="11_njvwh"]
+[ext_resource type="Script" path="res://scripts/gameplay/gun.gd" id="12_2wxgc"]
+[ext_resource type="PackedScene" uid="uid://bkywrvgqsvvmu" path="res://scenes/common/bullet.tscn" id="13_eaf6k"]
+[ext_resource type="Script" path="res://scripts/interaction/effects/camera_shake_effect.gd" id="14_m4bn5"]
+[ext_resource type="Script" path="res://scripts/camera/camera_shaker.gd" id="18_7yvpt"]
+[ext_resource type="Shader" path="res://shaders/shake2D.gdshader" id="19_5t7e4"]
+[ext_resource type="Texture2D" uid="uid://bg5qg4suahwtd" path="res://themes/pixelart/NA_background_sky_4.jpg" id="20_wvxso"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_xemoo"]
+radius = 51.8
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_x7rvq"]
+resource_local_to_scene = true
+shader = ExtResource("2_tpd8u")
+shader_parameter/is_shaking = true
+shader_parameter/amplitude = 0.0
+shader_parameter/is_flickering = false
+shader_parameter/flicker_color = Color(1, 1, 1, 1)
+shader_parameter/flicker_frequency = 10.0
+
+[sub_resource type="Resource" id="Resource_ej8lc"]
+script = ExtResource("5_lnxyu")
+sprite_path = NodePath("../Sprite2D")
+max_amplitude = 5.0
+shake_time = 1.0
+
+[sub_resource type="Resource" id="Resource_iuduy"]
+script = ExtResource("6_4yby4")
+slowmo_time = 0.5
+slowmo_scale = 0.5
+
+[sub_resource type="Resource" id="Resource_jtvvk"]
+script = ExtResource("7_6d2gh")
+sprite_path = NodePath("../Sprite2D")
+flicker_time = 1.0
+
+[sub_resource type="Resource" id="Resource_qgl23"]
+script = ExtResource("8_p3qh8")
+particles_path = NodePath("../CPUParticles2D")
+
+[sub_resource type="Resource" id="Resource_8ev03"]
+script = ExtResource("14_m4bn5")
+camera_trauma = 1.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_k48cb"]
+size = Vector2(100, 100)
+
+[sub_resource type="Resource" id="Resource_xu72g"]
+script = ExtResource("5_lnxyu")
+sprite_path = NodePath("Sprite2D")
+max_amplitude = 5.0
+shake_time = 1.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hkpwa"]
+size = Vector2(100, 100)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_6a7hb"]
+shader = ExtResource("19_5t7e4")
+shader_parameter/is_shaking = true
+shader_parameter/amplitude = 0.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1lrbn"]
+size = Vector2(1872, 77.5)
+
+[node name="Punch Party" type="Node2D"]
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+position = Vector2(724, 264)
+motion_mode = 1
+script = ExtResource("1_1dc0n")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
+shape = SubResource("CircleShape2D_xemoo")
+
+[node name="Sprite2D" type="Sprite2D" parent="CharacterBody2D"]
+material = SubResource("ShaderMaterial_x7rvq")
+texture = ExtResource("3_kwe0j")
+
+[node name="CPUParticles2D" type="CPUParticles2D" parent="CharacterBody2D"]
+emitting = false
+amount = 1000
+lifetime = 0.5
+one_shot = true
+explosiveness = 0.15
+lifetime_randomness = 1.0
+spread = 180.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 86.54
+initial_velocity_max = 86.54
+
+[node name="HitBox" type="Area2D" parent="CharacterBody2D"]
+collision_mask = 2
+script = ExtResource("3_f7uyv")
+hp = 50.0
+damage_effects = Array[Resource("res://scripts/interaction/effects/empty_effect.gd")]([SubResource("Resource_ej8lc"), SubResource("Resource_iuduy"), SubResource("Resource_jtvvk"), SubResource("Resource_qgl23")])
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D/HitBox"]
+shape = SubResource("CircleShape2D_xemoo")
+
+[node name="Gun" type="Node2D" parent="CharacterBody2D"]
+script = ExtResource("9_2pjw3")
+
+[node name="Sprite2D" type="Sprite2D" parent="CharacterBody2D/Gun"]
+texture_filter = 1
+position = Vector2(89, 0)
+scale = Vector2(5.815, 5.815)
+texture = ExtResource("10_uk5b4")
+script = ExtResource("11_njvwh")
+
+[node name="Node2D" type="Node2D" parent="CharacterBody2D/Gun/Sprite2D"]
+position = Vector2(4.12726, -2.06363)
+scale = Vector2(0.171969, 0.171969)
+script = ExtResource("12_2wxgc")
+bullet_scene = ExtResource("13_eaf6k")
+shoot_effects = Array[Resource("res://scripts/interaction/effects/empty_effect.gd")]([SubResource("Resource_8ev03")])
+
+[node name="HurtBox" type="Area2D" parent="."]
+position = Vector2(975, 249)
+collision_layer = 2
+script = ExtResource("6_ovvjq")
+
+[node name="Sprite2D" type="Sprite2D" parent="HurtBox"]
+modulate = Color(1, 0, 0, 1)
+texture = ExtResource("7_5qg83")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox"]
+modulate = Color(1, 0, 0, 1)
+shape = SubResource("RectangleShape2D_k48cb")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(576, 328)
+zoom = Vector2(-0.32, -0.32)
+
+[node name="CameraTargeter" type="Node" parent="Camera2D"]
+script = ExtResource("8_gyc27")
+targets = Array[NodePath]([NodePath("../../CharacterBody2D")])
+
+[node name="CameraShaker" type="Node" parent="Camera2D"]
+script = ExtResource("18_7yvpt")
+max_offset = Vector2(20, 20)
+max_roll = 0.01
+power = 1.0
+
+[node name="HitBox" type="Area2D" parent="."]
+position = Vector2(979, 371)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("3_f7uyv")
+hp = 100.0
+damage_effects = Array[Resource("res://scripts/interaction/effects/empty_effect.gd")]([SubResource("Resource_xu72g")])
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox"]
+shape = SubResource("RectangleShape2D_hkpwa")
+
+[node name="Sprite2D" type="Sprite2D" parent="HitBox"]
+material = SubResource("ShaderMaterial_6a7hb")
+position = Vector2(2, 3)
+texture = ExtResource("7_5qg83")
+
+[node name="Backgroundpicture" type="Node2D" parent="."]
+position = Vector2(804, 145)
+
+[node name="Sprite2D" type="Sprite2D" parent="Backgroundpicture"]
+visible = false
+show_behind_parent = true
+light_mask = 2
+z_index = -1
+position = Vector2(-180, 208)
+scale = Vector2(2.12604, 2.30926)
+texture = ExtResource("20_wvxso")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+
+[node name="ColorRect" type="ColorRect" parent="StaticBody2D"]
+offset_left = -495.0
+offset_top = 537.0
+offset_right = 1377.0
+offset_bottom = 612.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2(441, 573.25)
+shape = SubResource("RectangleShape2D_1lrbn")
